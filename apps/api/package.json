@@ -2,7 +2,8 @@
   "name": "api",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm:next\" \"npm:stripe\"",
+    "dev": "next dev -p 3002",
+    "dev:stripe": "concurrently \"npm:next\" \"npm:stripe\"",
     "next": "next dev -p 3002",
     "build": "next build",
     "start": "next start",

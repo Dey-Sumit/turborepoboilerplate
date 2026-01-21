@@ -5,7 +5,7 @@ export const keys = () =>
   createEnv({
     server: {
       SVIX_TOKEN: z
-        .union([z.string().startsWith("sk_"), z.string().startsWith("testsk_")])
+        .union([z.string().startsWith("sk_"), z.string().startsWith("testsk_"), z.literal("")])
         .optional(),
     },
     runtimeEnv: {

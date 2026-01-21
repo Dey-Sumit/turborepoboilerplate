@@ -5,7 +5,7 @@ export const keys = () =>
   createEnv({
     server: {
       BETTERSTACK_API_KEY: z.string().optional(),
-      BETTERSTACK_URL: z.url().optional(),
+      BETTERSTACK_URL: z.union([z.string().url(), z.literal("")]).optional(),
 
       // Added by Sentry Integration, Vercel Marketplace
       SENTRY_ORG: z.string().optional(),
@@ -13,7 +13,7 @@ export const keys = () =>
     },
     client: {
       // Added by Sentry Integration, Vercel Marketplace
-      NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
+      NEXT_PUBLIC_SENTRY_DSN: z.union([z.string().url(), z.literal("")]).optional(),
     },
     runtimeEnv: {
       BETTERSTACK_API_KEY: process.env.BETTERSTACK_API_KEY,

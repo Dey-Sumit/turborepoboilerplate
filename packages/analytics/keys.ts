@@ -4,9 +4,9 @@ import { z } from "zod";
 export const keys = () =>
   createEnv({
     client: {
-      NEXT_PUBLIC_POSTHOG_KEY: z.string().startsWith("phc_"),
-      NEXT_PUBLIC_POSTHOG_HOST: z.url(),
-      NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().startsWith("G-").optional(),
+      NEXT_PUBLIC_POSTHOG_KEY: z.union([z.string().startsWith("phc_"), z.literal("")]).optional(),
+      NEXT_PUBLIC_POSTHOG_HOST: z.union([z.string().url(), z.literal("")]).optional(),
+      NEXT_PUBLIC_GA_MEASUREMENT_ID: z.union([z.string().startsWith("G-"), z.literal("")]).optional(),
     },
     runtimeEnv: {
       NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
