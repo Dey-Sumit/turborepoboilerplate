@@ -16,7 +16,7 @@
     "@prisma/client-runtime-utils": "^7.1.0",
     "@t3-oss/env-nextjs": "^0.13.8",
     "server-only": "^0.0.1",
-    "undici": "^7.16.0",
+    "undici": "^7.19.0",
     "ws": "^8.18.3",
     "zod": "^4.1.13"
   },
