@@ -56,11 +56,15 @@
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "commander": "^14.0.2"
+    "commander": "^14.0.2",
+    "react": "19.2.1",
+    "react-dom": "19.2.1"
   },
   "pnpm": {
     "overrides": {
-      "parse5": "^7.2.1"
+      "parse5": "^7.2.1",
+      "react": "19.2.1",
+      "react-dom": "19.2.1"
     }
   },
   "type": "module"
