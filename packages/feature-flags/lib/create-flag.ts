@@ -9,7 +9,7 @@ export const createFlag = (key: string) =>
     async decide() {
       const { userId } = await auth();
 
-      if (!userId) {
+      if (!userId || !analytics) {
         return this.defaultValue as boolean;
       }
 
