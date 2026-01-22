@@ -5,7 +5,7 @@ import * as React from "react"
 import {
   Example,
   ExampleWrapper,
-} from "~/components/example"
+} from "@/components/example"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,9 +17,9 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "~/components/ui/alert-dialog"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
+} from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -28,7 +28,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/components/ui/card"
+} from "@/components/ui/card"
 import {
   Combobox,
   ComboboxContent,
@@ -36,7 +36,7 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "~/components/ui/combobox"
+} from "@/components/ui/combobox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -53,9 +53,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
-import { Field, FieldGroup, FieldLabel } from "~/components/ui/field"
-import { Input } from "~/components/ui/input"
+} from "@/components/ui/dropdown-menu"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -63,15 +63,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/select"
-import { Textarea } from "~/components/ui/textarea"
+} from "@/components/ui/select"
+// import { Textarea } from "@/components/ui/textarea"
 import { PlusIcon, BluetoothIcon, MoreVerticalIcon, FileIcon, FolderIcon, FolderOpenIcon, FileCodeIcon, MoreHorizontalIcon, FolderSearchIcon, SaveIcon, DownloadIcon, EyeIcon, LayoutIcon, PaletteIcon, SunIcon, MoonIcon, MonitorIcon, UserIcon, CreditCardIcon, SettingsIcon, KeyboardIcon, LanguagesIcon, BellIcon, MailIcon, ShieldIcon, HelpCircleIcon, FileTextIcon, LogOutIcon } from "lucide-react"
+import { Textarea } from "./ui/textarea"
 
 export function ComponentExample() {
   return (
     <ExampleWrapper>
-    
-      {/* <CardExample /> */}
+      <CardExample />
       <FormExample />
     </ExampleWrapper>
   )
@@ -89,7 +89,7 @@ function CardExample() {
           className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale"
         />
         <CardHeader>
-          <CardTitle> Plus is replacing Monitoring</CardTitle>
+          <CardTitle>Observability Plus is replacing Monitoring</CardTitle>
           <CardDescription>
             Switch to the improved way to explore your data, with natural
             language. Monitoring will no longer be available on the Pro plan in
