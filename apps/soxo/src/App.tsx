@@ -1,7 +1,20 @@
-import { ComponentExample } from "./components/component-example";
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Home } from './pages/home';
+import { About } from './pages/about';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/about',
+    element: <About />,
+  },
+]);
 
 export function App() {
-return <ComponentExample />;
+  return <RouterProvider router={router} />;
 }
 
 export default App;
