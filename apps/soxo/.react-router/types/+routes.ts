@@ -19,12 +19,59 @@ type Pages = {
       "projectId": string;
     };
   };
+  "/api/upload": {
+    params: {};
+  };
+  "/api/progress": {
+    params: {};
+  };
+  "/api/render": {
+    params: {};
+  };
+  "/api/captions": {
+    params: {};
+  };
+  "/api/chat": {
+    params: {};
+  };
+  "/api/chat-update-component": {
+    params: {};
+  };
+  "/api/fonts/:name": {
+    params: {
+      "name": string;
+    };
+  };
+  "/api/generate-caption-scenes": {
+    params: {};
+  };
+  "/api/list-assets": {
+    params: {};
+  };
+  "/poc/external-asset": {
+    params: {};
+  };
+  "/poc/ui-example": {
+    params: {};
+  };
+  "/poc/chat": {
+    params: {};
+  };
+  "/poc/caption-scenes": {
+    params: {};
+  };
+  "/poc/silence-remove": {
+    params: {};
+  };
+  "/poc/landing": {
+    params: {};
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/editor/:projectId";
+    page: "/" | "/editor/:projectId" | "/api/upload" | "/api/progress" | "/api/render" | "/api/captions" | "/api/chat" | "/api/chat-update-component" | "/api/fonts/:name" | "/api/generate-caption-scenes" | "/api/list-assets" | "/poc/external-asset" | "/poc/ui-example" | "/poc/chat" | "/poc/caption-scenes" | "/poc/silence-remove" | "/poc/landing";
   };
   "routes/projects.tsx": {
     id: "routes/projects";
@@ -34,10 +81,85 @@ type RouteFiles = {
     id: "routes/editor";
     page: "/editor/:projectId";
   };
+  "routes/api/upload.ts": {
+    id: "routes/api/upload";
+    page: "/api/upload";
+  };
+  "routes/api/progress.ts": {
+    id: "routes/api/progress";
+    page: "/api/progress";
+  };
+  "routes/api/render.ts": {
+    id: "routes/api/render";
+    page: "/api/render";
+  };
+  "routes/api/captions.ts": {
+    id: "routes/api/captions";
+    page: "/api/captions";
+  };
+  "routes/api/chat.ts": {
+    id: "routes/api/chat";
+    page: "/api/chat";
+  };
+  "routes/api/chat-update-component.ts": {
+    id: "routes/api/chat-update-component";
+    page: "/api/chat-update-component";
+  };
+  "routes/api/font.ts": {
+    id: "routes/api/font";
+    page: "/api/fonts/:name";
+  };
+  "routes/api/generate-caption-scenes.ts": {
+    id: "routes/api/generate-caption-scenes";
+    page: "/api/generate-caption-scenes";
+  };
+  "routes/api/list-assets.ts": {
+    id: "routes/api/list-assets";
+    page: "/api/list-assets";
+  };
+  "routes/poc/external-asset.tsx": {
+    id: "routes/poc/external-asset";
+    page: "/poc/external-asset";
+  };
+  "../src/App.tsx": {
+    id: "../src/App";
+    page: "/poc/ui-example";
+  };
+  "routes/poc/chat.tsx": {
+    id: "routes/poc/chat";
+    page: "/poc/chat";
+  };
+  "routes/poc/caption-scenes.tsx": {
+    id: "routes/poc/caption-scenes";
+    page: "/poc/caption-scenes";
+  };
+  "routes/poc/silence-remove.tsx": {
+    id: "routes/poc/silence-remove";
+    page: "/poc/silence-remove";
+  };
+  "routes/poc/landing.tsx": {
+    id: "routes/poc/landing";
+    page: "/poc/landing";
+  };
 };
 
 type RouteModules = {
   "root": typeof import("./src/root.tsx");
   "routes/projects": typeof import("./src/routes/projects.tsx");
   "routes/editor": typeof import("./src/routes/editor.tsx");
+  "routes/api/upload": typeof import("./src/routes/api/upload.ts");
+  "routes/api/progress": typeof import("./src/routes/api/progress.ts");
+  "routes/api/render": typeof import("./src/routes/api/render.ts");
+  "routes/api/captions": typeof import("./src/routes/api/captions.ts");
+  "routes/api/chat": typeof import("./src/routes/api/chat.ts");
+  "routes/api/chat-update-component": typeof import("./src/routes/api/chat-update-component.ts");
+  "routes/api/font": typeof import("./src/routes/api/font.ts");
+  "routes/api/generate-caption-scenes": typeof import("./src/routes/api/generate-caption-scenes.ts");
+  "routes/api/list-assets": typeof import("./src/routes/api/list-assets.ts");
+  "routes/poc/external-asset": typeof import("./src/routes/poc/external-asset.tsx");
+  "../src/App": typeof import("./src/../src/App.tsx");
+  "routes/poc/chat": typeof import("./src/routes/poc/chat.tsx");
+  "routes/poc/caption-scenes": typeof import("./src/routes/poc/caption-scenes.tsx");
+  "routes/poc/silence-remove": typeof import("./src/routes/poc/silence-remove.tsx");
+  "routes/poc/landing": typeof import("./src/routes/poc/landing.tsx");
 };

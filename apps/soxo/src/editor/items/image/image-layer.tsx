@@ -1,0 +1,103 @@
+import React, {useMemo} from 'react';
+import {Img, useCurrentFrame, useVideoConfig} from 'remotion';
+import {RequireCachedAsset} from '../../caching/require-cached-asset';
+import {usePreferredLocalUrl} from '../../utils/find-asset-by-id';
+import {parseCssString} from '../../utils/parse-css-string';
+import {useAssetFromItem} from '../../utils/use-context';
+import {useCroppableLayer} from '../croppable-layer';
+import {
+	calculateFadeInOpacity,
+	calculateFadeOutOpacity,
+} from '../video/calculate-fade';
+import {ImageItem} from './image-item-type';
+// Three-phase animation imports
+import {getThreePhaseAnimationStyle} from '../../animations/get-three-phase-animation-style';
+import {mergeAnimationStyles} from '../../animations/merge-animation-styles';
+
+const ImageItemUnmemoized: React.FC<{
+	item: ImageItem;
+	cropBackground: boolean;
+}> = ({item, cropBackground}) => {
+	if (item.type !== 'image') {
+		throw new Error('Item is not an image');
+	}
+
+	const frame = useCurrentFrame();
+	const {fps, durationInFrames} = useVideoConfig();
+	const asset = useAssetFromItem(item);
+
+	const opacity = useMemo(() => {
+		const inOpacity = calculateFadeInOpacity({
+			currentFrame: frame,
+			fadeInDurationInSeconds: item.fadeInDurationInSeconds,
+			framesPerSecond: fps,
+		});
+		const outOpacity = calculateFadeOutOpacity({
+			currentFrame: frame,
+			fadeOutDurationInSeconds: item.fadeOutDurationInSeconds,
+			framesPerSecond: fps,
+			totalDurationInFrames: durationInFrames,
+		});
+		return inOpacity * outOpacity * item.opacity;
+	}, [
+		item.fadeInDurationInSeconds,
+		fps,
+		frame,
+		item.opacity,
+		durationInFrames,
+		item.fadeOutDurationInSeconds,
+	]);
+
+	const cssStyles = useMemo(() => parseCssString(item.css || ''), [item.css]);
+
+	const {innerStyle, outerStyle} = useCroppableLayer({
+		item,
+		rotation: item.rotation,
+		opacity,
+		borderRadius: item.borderRadius,
+		cropBackground,
+		cssStyles,
+	});
+
+	// Apply container animation styles
+	const animationStyle = useMemo(() => {
+		// Three-phase animation system
+		// Note: frame is already relative to item start (inside Remotion Sequence)
+		// so we pass 0 as itemStartFrame instead of item.from
+		if (item.animations) {
+			return getThreePhaseAnimationStyle(
+				item.animations,
+				frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+				item.durationInFrames,
+				fps,
+			);
+		}
+
+		return {};
+	}, [item.animations, frame, item.durationInFrames, fps]);
+
+	// Merge animation styles with outer styles intelligently
+	const mergedStyle = useMemo(() => {
+		return mergeAnimationStyles(outerStyle, animationStyle);
+	}, [outerStyle, animationStyle]);
+
+	const src = usePreferredLocalUrl(asset);
+
+	return (
+		<div
+			style={mergedStyle}
+		>
+			<RequireCachedAsset asset={asset}>
+				<Img
+					// crossOrigin="anonymous"
+					pauseWhenLoading
+					style={innerStyle}
+					src={src}
+				/>
+			</RequireCachedAsset>
+		</div>
+	);
+};
+
+export const ImageLayer = React.memo(ImageItemUnmemoized);

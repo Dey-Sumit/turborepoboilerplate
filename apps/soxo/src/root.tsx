@@ -6,7 +6,16 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from 'react-router';
-import './index.css';
+import './editor/editor-starter.css';
+import {Route} from './+types/root';
+
+export const links: Route.LinksFunction = () => [
+	{
+		rel: 'icon',
+		href: '/favicon.png',
+		type: 'image/svg+xml',
+	},
+];
 
 export function Layout({children}: {children: React.ReactNode}) {
 	return (
@@ -32,7 +41,7 @@ export default function App() {
 	return <Outlet />;
 }
 
-export function ErrorBoundary({error}: {error: unknown}) {
+export function ErrorBoundary({error}: Route.ErrorBoundaryProps) {
 	let message = 'Oops!';
 	let details = 'An unexpected error occurred.';
 	let stack: string | undefined;

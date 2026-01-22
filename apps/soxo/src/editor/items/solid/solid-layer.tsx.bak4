@@ -1,0 +1,89 @@
+import React, {useMemo} from 'react';
+import {useCurrentFrame, useVideoConfig} from 'remotion';
+import {parseCssString} from '../../utils/parse-css-string';
+import {
+	calculateFadeInOpacity,
+	calculateFadeOutOpacity,
+} from '../video/calculate-fade';
+import {SolidItem} from './solid-item-type';
+import {getThreePhaseAnimationStyle} from '../../animations/get-three-phase-animation-style';
+import {mergeAnimationStyles} from '../../animations/merge-animation-styles';
+
+export const SolidLayer = ({item}: {item: SolidItem}) => {
+	const frame = useCurrentFrame();
+	const {fps, durationInFrames} = useVideoConfig();
+
+	const opacity = useMemo(() => {
+		const inOpacity = calculateFadeInOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeInDurationInSeconds: item.fadeInDurationInSeconds,
+			framesPerSecond: fps,
+		});
+		const outOpacity = calculateFadeOutOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeOutDurationInSeconds: item.fadeOutDurationInSeconds,
+			framesPerSecond: fps,
+			totalDurationInFrames: durationInFrames,
+		});
+		return inOpacity * outOpacity * item.opacity;
+	}, [
+		item.fadeInDurationInSeconds,
+		fps,
+		frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+		item.opacity,
+		durationInFrames,
+		item.fadeOutDurationInSeconds,
+	]);
+
+	const cssStyles = useMemo(() => parseCssString(item.css || ''), [item.css]);
+
+	// Apply three-phase animation styles
+	const animationStyle = useMemo(() => {
+		if (item.animations) {
+			return getThreePhaseAnimationStyle(
+				item.animations,
+				frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+				
+				item.durationInFrames,
+				fps,
+			);
+		}
+		return {};
+	}, [item.animations, frame, item.from, item.durationInFrames, fps]);
+
+	const style: React.CSSProperties = useMemo(() => {
+		const baseStyle: React.CSSProperties = {
+			backgroundColor: item.color,
+			position: 'absolute',
+			left: item.left,
+			top: item.top,
+			width: item.width,
+			height: item.height,
+			opacity,
+			borderRadius: item.borderRadius,
+			transform: `rotate(${item.rotation}deg)`,
+			// Apply custom CSS styles
+			...cssStyles,
+		};
+
+		// Merge animation styles intelligently
+		return mergeAnimationStyles(baseStyle, animationStyle);
+	}, [
+		item.color,
+		item.height,
+		item.left,
+		item.top,
+		item.width,
+		opacity,
+		item.borderRadius,
+		item.rotation,
+		cssStyles,
+		animationStyle,
+	]);
+
+	return <div style={style}></div>;
+};

@@ -18,6 +18,7 @@
     "dev:web": "turbo dev --filter=web",
     "dev:api": "turbo dev --filter=api",
     "dev:main": "turbo dev --filter=app --filter=api",
+    "dev:soxo": "turbo dev --filter=soxo",
     "start:app": "cd apps/app && pnpm start",
     "start:web": "cd apps/web && pnpm start",
     "start:api": "cd apps/api && pnpm start",

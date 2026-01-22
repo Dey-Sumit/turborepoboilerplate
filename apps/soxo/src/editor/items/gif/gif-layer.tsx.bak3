@@ -1,0 +1,90 @@
+import {Gif} from '@remotion/gif';
+import React, {useMemo} from 'react';
+import {useCurrentFrame, useVideoConfig} from 'remotion';
+import {getThreePhaseAnimationStyle} from '../../animations/get-three-phase-animation-style';
+import {mergeAnimationStyles} from '../../animations/merge-animation-styles';
+import {RequireCachedAsset} from '../../caching/require-cached-asset';
+import {usePreferredLocalUrl} from '../../utils/find-asset-by-id';
+import {useAssetFromItem} from '../../utils/use-context';
+import {useCroppableLayer} from '../croppable-layer';
+import {
+	calculateFadeInOpacity,
+	calculateFadeOutOpacity,
+} from '../video/calculate-fade';
+import {GifItem} from './gif-item-type';
+
+export const GifLayer: React.FC<{
+	item: GifItem;
+	cropBackground: boolean;
+}> = ({item, cropBackground}) => {
+	if (item.type !== 'gif') {
+		throw new Error('Item is not a gif');
+	}
+
+	const frame = useCurrentFrame();
+	const {fps, durationInFrames} = useVideoConfig();
+	const asset = useAssetFromItem(item);
+
+	const opacity = useMemo(() => {
+		const inOpacity = calculateFadeInOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeInDurationInSeconds: item.fadeInDurationInSeconds,
+			framesPerSecond: fps,
+		});
+		const outOpacity = calculateFadeOutOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeOutDurationInSeconds: item.fadeOutDurationInSeconds,
+			framesPerSecond: fps,
+			totalDurationInFrames: durationInFrames,
+		});
+		return inOpacity * outOpacity * item.opacity;
+	}, [
+		item.fadeInDurationInSeconds,
+		fps,
+		frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+		item.opacity,
+		durationInFrames,
+		item.fadeOutDurationInSeconds,
+	]);
+
+	// Apply three-phase animation styles
+	const animationStyle = useMemo(() => {
+		if (item.animations) {
+			return getThreePhaseAnimationStyle(
+				item.animations,
+				frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+				item.from,
+				item.durationInFrames,
+				fps,
+			);
+		}
+		return {};
+	}, [item.animations, frame, item.from, item.durationInFrames, fps]);
+
+	const {innerStyle, outerStyle} = useCroppableLayer({
+		item,
+		rotation: item.rotation,
+		opacity,
+		borderRadius: item.borderRadius,
+		cropBackground,
+	});
+
+	// Merge animation styles with outer styles intelligently
+	const mergedStyle = useMemo(() => {
+		return mergeAnimationStyles(outerStyle, animationStyle);
+	}, [outerStyle, animationStyle]);
+
+	const src = usePreferredLocalUrl(asset);
+
+	return (
+		<div style={mergedStyle}>
+			<RequireCachedAsset asset={asset}>
+				<Gif style={innerStyle} src={src} playbackRate={item.playbackRate} />
+			</RequireCachedAsset>
+		</div>
+	);
+};

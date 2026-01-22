@@ -1,0 +1,554 @@
+import React, {useCallback} from 'react';
+import {Slider} from '../../components/ui/slider';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../../components/ui/select';
+import useEditorStore from '../../zustand/editor-store';
+import {useContinuousUpdate} from '../../zustand/undo-hooks';
+import {
+	FEATURE_ALIGNMENT_CONTROL,
+	FEATURE_DIMENSIONS_CONTROL,
+	FEATURE_OPACITY_CONTROL,
+	FEATURE_POSITION_CONTROL,
+	FEATURE_ROTATION_CONTROL,
+	FEATURE_VISUAL_FADE_CONTROL,
+	FEATURE_ANIMATION_CONTROL,
+} from '../flags';
+import {
+	BorderStyle,
+	FillPattern,
+	ShapeItem,
+	ShapeVariant,
+} from '../items/shape/shape-item-type';
+import {ColorInspector} from './color-inspector';
+import {InspectorLabel, InspectorSubLabel} from './components/inspector-label';
+import {
+	CollapsableInspectorSection,
+	InspectorDivider,
+} from './components/inspector-section';
+import {AlignmentControls} from './controls/alignment-controls';
+import {CssControls} from './controls/css-controls';
+import {DimensionsControls} from './controls/dimensions-controls';
+import {FadeControls} from './controls/fade-controls';
+import {OpacityControls} from './controls/opacity-controls';
+import {PositionControl} from './controls/position-control';
+import {RotationControl} from './controls/rotation-controls';
+import {TransitionControls} from './controls/transition-controls';
+import {ThreePhaseAnimationControls} from './controls/three-phase-animation-controls';
+
+/**
+ * ShapeInspector Component
+ *
+ * Inspector panel for shape items, providing controls for:
+ * - Layout: alignment, position, dimensions, rotation
+ * - Shape: variant selection, corner radius, points
+ * - Style: opacity, fill color, stroke color, stroke width, border style, fill pattern
+ * - Effects: fade in/out, transitions
+ *
+ * Features collapsible sections with persistent open/closed state.
+ * Uses shadcn UI components for consistent design system.
+ *
+ * @param item - ShapeItem to inspect and modify
+ */
+const ShapeInspectorUnmemoized: React.FC<{
+	item: ShapeItem;
+}> = ({item}) => {
+	const updateItem = useEditorStore((state) => state.updateItem);
+
+	/**
+	 * Update shape variant
+	 */
+	const handleVariantChange = useCallback(
+		(value: string) => {
+			const newVariant = value as ShapeVariant;
+			updateItem(item.id, (currentItem) => ({
+				...currentItem,
+				variant: newVariant,
+			}));
+		},
+		[item.id, updateItem],
+	);
+
+	/**
+	 * Update border style
+	 */
+	const handleBorderStyleChange = useCallback(
+		(value: string) => {
+			const newBorderStyle = value as BorderStyle;
+			updateItem(item.id, (currentItem) => ({
+				...currentItem,
+				borderStyle: newBorderStyle,
+			}));
+		},
+		[item.id, updateItem],
+	);
+
+	/**
+	 * Update fill pattern
+	 */
+	const handleFillPatternChange = useCallback(
+		(value: string) => {
+			const newFillPattern = value as FillPattern;
+			updateItem(item.id, (currentItem) => ({
+				...currentItem,
+				fillPattern: newFillPattern,
+			}));
+		},
+		[item.id, updateItem],
+	);
+
+	/**
+	 * Update stroke width via slider with undo tracking
+	 */
+	const tracker = useContinuousUpdate(`stroke-width-${item.id}`);
+
+	const performStrokeWidthUpdate = useCallback(
+		(newStrokeWidth: number) => {
+			updateItem(
+				item.id,
+				(i) => {
+					if (i.strokeWidth === newStrokeWidth) {
+						return i;
+					}
+					return {
+						...i,
+						strokeWidth: newStrokeWidth,
+					};
+				},
+				'updateStrokeWidth',
+			);
+		},
+		[updateItem, item.id],
+	);
+
+	const handleStrokeWidthChange = useCallback(
+		(value: number | readonly number[]) => {
+			if (typeof value === 'object') {
+				return;
+			}
+			const newStrokeWidth = value;
+
+			if (!tracker.isActive) {
+				tracker.start(() => performStrokeWidthUpdate(newStrokeWidth));
+				return;
+			}
+
+			tracker.update(() => performStrokeWidthUpdate(newStrokeWidth));
+		},
+		[tracker, performStrokeWidthUpdate],
+	);
+
+	const handleStrokeWidthCommit = useCallback(
+		(value: number | readonly number[]) => {
+			if (typeof value === 'object') {
+				return;
+			}
+			const newStrokeWidth = value;
+			tracker.end(() => performStrokeWidthUpdate(newStrokeWidth));
+		},
+		[tracker, performStrokeWidthUpdate],
+	);
+
+	/**
+	 * Update corner radius (for rectangles) with undo tracking
+	 */
+	const trackerCornerRadius = useContinuousUpdate(`corner-radius-${item.id}`);
+
+	const performCornerRadiusUpdate = useCallback(
+		(newCornerRadius: number) => {
+			updateItem(
+				item.id,
+				(i) => {
+					if (i.cornerRadius === newCornerRadius) {
+						return i;
+					}
+					return {
+						...i,
+						cornerRadius: newCornerRadius,
+					};
+				},
+				'updateCornerRadius',
+			);
+		},
+		[updateItem, item.id],
+	);
+
+	const handleCornerRadiusChange = useCallback(
+		(value: number | readonly number[]) => {
+			if (typeof value === 'object') {
+				return;
+			}
+			const newCornerRadius = value;
+
+			if (!trackerCornerRadius.isActive) {
+				trackerCornerRadius.start(() =>
+					performCornerRadiusUpdate(newCornerRadius),
+				);
+				return;
+			}
+
+			trackerCornerRadius.update(() => performCornerRadiusUpdate(newCornerRadius));
+		},
+		[trackerCornerRadius, performCornerRadiusUpdate],
+	);
+
+	const handleCornerRadiusCommit = useCallback(
+		(value: number | readonly number[]) => {
+			if (typeof value === 'object') {
+				return;
+			}
+			const newCornerRadius = value;
+			trackerCornerRadius.end(() => performCornerRadiusUpdate(newCornerRadius));
+		},
+		[trackerCornerRadius, performCornerRadiusUpdate],
+	);
+
+	/**
+	 * Update points (for star shapes) with undo tracking
+	 */
+	const trackerPoints = useContinuousUpdate(`points-${item.id}`);
+
+	const performPointsUpdate = useCallback(
+		(newPoints: number) => {
+			updateItem(
+				item.id,
+				(i) => {
+					if (i.points === newPoints) {
+						return i;
+					}
+					return {
+						...i,
+						points: newPoints,
+					};
+				},
+				'updatePoints',
+			);
+		},
+		[updateItem, item.id],
+	);
+
+	const handlePointsChange = useCallback(
+		(value: number | readonly number[]) => {
+			if (typeof value === 'object') {
+				return;
+			}
+			const newPoints = value;
+
+			if (!trackerPoints.isActive) {
+				trackerPoints.start(() => performPointsUpdate(newPoints));
+				return;
+			}
+
+			trackerPoints.update(() => performPointsUpdate(newPoints));
+		},
+		[trackerPoints, performPointsUpdate],
+	);
+
+	const handlePointsCommit = useCallback(
+		(value: number | readonly number[]) => {
+			if (typeof value === 'object') {
+				return;
+			}
+			const newPoints = value;
+			trackerPoints.end(() => performPointsUpdate(newPoints));
+		},
+		[trackerPoints, performPointsUpdate],
+	);
+
+	// Check if current variant supports specific properties
+	const supportsCornerRadius = item.variant === 'rectangle';
+	const supportsPoints = item.variant === 'star';
+
+	// Format variant display name
+	const getVariantDisplayName = (variant: ShapeVariant): string => {
+		const names: Record<ShapeVariant, string> = {
+			circle: 'Circle',
+			rectangle: 'Rectangle',
+			triangle: 'Triangle',
+			star: 'Star',
+			'arrow-right': 'Arrow Right',
+			'arrow-left': 'Arrow Left',
+			'arrow-up': 'Arrow Up',
+			'arrow-down': 'Arrow Down',
+		};
+		return names[variant];
+	};
+
+	// Format border style display name
+	const getBorderStyleDisplayName = (style: BorderStyle): string => {
+		const names: Record<BorderStyle, string> = {
+			solid: 'Solid',
+			dashed: 'Dashed',
+			dotted: 'Dotted',
+		};
+		return names[style];
+	};
+
+	// Format fill pattern display name
+	const getFillPatternDisplayName = (pattern: FillPattern): string => {
+		const names: Record<FillPattern, string> = {
+			none: 'None',
+			'stripes-horizontal': 'Stripes (Horizontal)',
+			'stripes-vertical': 'Stripes (Vertical)',
+			'stripes-diagonal': 'Stripes (Diagonal)',
+			dots: 'Dots',
+			grid: 'Grid',
+		};
+		return names[pattern];
+	};
+
+	return (
+		<div>
+			{/* Layout Section */}
+			<CollapsableInspectorSection
+				summary={<InspectorLabel>Layout</InspectorLabel>}
+				id={`layout-${item.id}`}
+				defaultOpen
+			>
+				{FEATURE_ALIGNMENT_CONTROL && <AlignmentControls itemId={item.id} />}
+				{FEATURE_POSITION_CONTROL && <PositionControl itemId={item.id} />}
+				{FEATURE_DIMENSIONS_CONTROL && <DimensionsControls itemId={item.id} />}
+				{FEATURE_ROTATION_CONTROL && (
+					<RotationControl rotation={item.rotation} itemId={item.id} />
+				)}
+			</CollapsableInspectorSection>
+
+			<InspectorDivider />
+
+			{/* Shape Type Section */}
+			<CollapsableInspectorSection
+				summary={<InspectorLabel>Shape</InspectorLabel>}
+				id={`shape-${item.id}`}
+				defaultOpen
+			>
+				{/* Shape variant selector */}
+				<div>
+					<InspectorSubLabel>Type</InspectorSubLabel>
+					<Select value={item.variant} onValueChange={handleVariantChange}>
+						<SelectTrigger className="w-full">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="circle">
+								{getVariantDisplayName('circle')}
+							</SelectItem>
+							<SelectItem value="rectangle">
+								{getVariantDisplayName('rectangle')}
+							</SelectItem>
+							<SelectItem value="triangle">
+								{getVariantDisplayName('triangle')}
+							</SelectItem>
+							<SelectItem value="star">
+								{getVariantDisplayName('star')}
+							</SelectItem>
+							<SelectItem value="arrow-right">
+								{getVariantDisplayName('arrow-right')}
+							</SelectItem>
+							<SelectItem value="arrow-left">
+								{getVariantDisplayName('arrow-left')}
+							</SelectItem>
+							<SelectItem value="arrow-up">
+								{getVariantDisplayName('arrow-up')}
+							</SelectItem>
+							<SelectItem value="arrow-down">
+								{getVariantDisplayName('arrow-down')}
+							</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+
+				{/* Corner radius control (only for rectangles) */}
+				{supportsCornerRadius && (
+					<div>
+						<InspectorSubLabel>
+							Corner Radius: {item.cornerRadius || 0}px
+						</InspectorSubLabel>
+						<div className="flex w-full items-center gap-3">
+							<Slider
+								value={item.cornerRadius || 0}
+								onValueChange={handleCornerRadiusChange}
+								onValueCommitted={handleCornerRadiusCommit}
+								min={0}
+								max={50}
+								step={1}
+								className="flex-1"
+								title={`Corner Radius: ${item.cornerRadius || 0}px`}
+							/>
+							<div className="min-w-[40px] text-right text-xs text-white/75">
+								{item.cornerRadius || 0}
+							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Points control (only for stars) */}
+				{supportsPoints && (
+					<div>
+						<InspectorSubLabel>Points: {item.points || 5}</InspectorSubLabel>
+						<div className="flex w-full items-center gap-3">
+							<Slider
+								value={item.points || 5}
+								onValueChange={handlePointsChange}
+								onValueCommitted={handlePointsCommit}
+								min={3}
+								max={12}
+								step={1}
+								className="flex-1"
+								title={`Points: ${item.points || 5}`}
+							/>
+							<div className="min-w-[40px] text-right text-xs text-white/75">
+								{item.points || 5}
+							</div>
+						</div>
+					</div>
+				)}
+			</CollapsableInspectorSection>
+
+			<InspectorDivider />
+
+			{/* Style Section */}
+			<CollapsableInspectorSection
+				summary={<InspectorLabel>Style</InspectorLabel>}
+				id={`style-${item.id}`}
+				defaultOpen
+			>
+				{FEATURE_OPACITY_CONTROL && (
+					<OpacityControls opacity={item.opacity} itemId={item.id} />
+				)}
+
+				{/* Fill color picker */}
+				<ColorInspector
+					color={item.fill}
+					itemId={item.id}
+					colorType="color"
+					accessibilityLabel="Fill color"
+					label="Fill Color"
+				/>
+
+				{/* Fill pattern selector */}
+				<div>
+					<InspectorSubLabel>Fill Pattern</InspectorSubLabel>
+					<Select
+						value={item.fillPattern || 'none'}
+						onValueChange={handleFillPatternChange}
+					>
+						<SelectTrigger className="w-full">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="none">
+								{getFillPatternDisplayName('none')}
+							</SelectItem>
+							<SelectItem value="stripes-horizontal">
+								{getFillPatternDisplayName('stripes-horizontal')}
+							</SelectItem>
+							<SelectItem value="stripes-vertical">
+								{getFillPatternDisplayName('stripes-vertical')}
+							</SelectItem>
+							<SelectItem value="stripes-diagonal">
+								{getFillPatternDisplayName('stripes-diagonal')}
+							</SelectItem>
+							<SelectItem value="dots">
+								{getFillPatternDisplayName('dots')}
+							</SelectItem>
+							<SelectItem value="grid">
+								{getFillPatternDisplayName('grid')}
+							</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+
+				{/* Stroke color picker */}
+				<ColorInspector
+					color={item.stroke}
+					itemId={item.id}
+					colorType="strokeColor"
+					accessibilityLabel="Stroke color"
+					label="Stroke Color"
+				/>
+
+				{/* Stroke width slider */}
+				<div>
+					<InspectorSubLabel>Stroke Width</InspectorSubLabel>
+					<div className="flex w-full items-center gap-3">
+						<Slider
+							value={item.strokeWidth}
+							onValueChange={handleStrokeWidthChange}
+							onValueCommitted={handleStrokeWidthCommit}
+							min={0}
+							max={20}
+							step={0.5}
+							className="flex-1"
+							title={`Stroke Width: ${item.strokeWidth}px`}
+						/>
+						<div className="min-w-[40px] text-right text-xs text-white/75">
+							{item.strokeWidth}
+						</div>
+					</div>
+				</div>
+
+				{/* Border style selector */}
+				<div>
+					<InspectorSubLabel>Border Style</InspectorSubLabel>
+					<Select
+						value={item.borderStyle || 'solid'}
+						onValueChange={handleBorderStyleChange}
+					>
+						<SelectTrigger className="w-full">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="solid">
+								{getBorderStyleDisplayName('solid')}
+							</SelectItem>
+							<SelectItem value="dashed">
+								{getBorderStyleDisplayName('dashed')}
+							</SelectItem>
+							<SelectItem value="dotted">
+								{getBorderStyleDisplayName('dotted')}
+							</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+			</CollapsableInspectorSection>
+
+			<InspectorDivider />
+
+			{/* CSS Override Section */}
+			<div className="px-4 py-3">
+				<CssControls css={item.css} itemId={item.id} />
+			</div>
+
+			{/* Fade Controls */}
+			{FEATURE_VISUAL_FADE_CONTROL && (
+				<>
+					<InspectorDivider />
+					<CollapsableInspectorSection
+						summary={<InspectorLabel>Fade</InspectorLabel>}
+						id={`fade-${item.id}`}
+						defaultOpen={false}
+					>
+						<FadeControls
+							fadeInDuration={item.fadeInDurationInSeconds}
+							fadeOutDuration={item.fadeOutDurationInSeconds}
+							itemId={item.id}
+							durationInFrames={item.durationInFrames}
+						/>
+					</CollapsableInspectorSection>
+				</>
+			)}
+
+			{/* Transition Controls */}
+			<TransitionControls item={item} />
+		</div>
+	);
+};
+
+/**
+ * Memoized ShapeInspector to prevent unnecessary re-renders
+ */
+export const ShapeInspector = React.memo(ShapeInspectorUnmemoized);

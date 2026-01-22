@@ -1,0 +1,252 @@
+{
+	"type": "json",
+	"value": {
+		"steps": [
+			{
+				"content": [
+					{
+						"type": "text",
+						"text": "Here are the top 3 relevant search results for \"top 5 Shah Rukh Khan movies by total earnings\":\n\n[1]  \n**Title:** Shah Rukh Khan Top 10 highest grossing movies and their verdict  \n**Snippet:** Shah Rukh Khan Top 10 highest grossing movies and their verdict · 1. Jawan · 2. Pathaan · 3. Dunki · 4. Chennai Express · 5. Happy New Year · 6. Dilwale · 7. Raees · 8. (Lists worldwide gross: Jawan 1152cr, Pathaan 1050.8cr, Dunki 458.4cr, etc.)  \n**URL:** https://www.imdb.com/list/ls564805761/[1]\n\n[2]  \n**Title:** List of highest-grossing Indian films in overseas markets - Wikipedia  \n**Snippet:** Shah Rukh Khan also holds the record for having starred in the annual highest-grossing Hindi film in overseas markets for 15 individual years... (Mentions Pathaan and Jawan in top overseas earners across markets like US, UK, Australia.)  \n**URL:** https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets[2]\n\n[3]  \n**Title:** Shahrukh Khan Top Overseas Grossers - Box Office India  \n**Snippet:** Jawan, 1,75,14,00,000 · Animal, 1,68,59,00,000 · Pathaan ; ... Top Grosses Overseas: 1. Dilwale 2. My Name Is Khan 3. Chennai Express 4. Happy New Year... Top Grosses Worldwide: 1. Chennai Express 2. Dilwale...  \n**URL:** https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24[3]"
+					},
+					{
+						"type": "source",
+						"sourceType": "url",
+						"id": "WDlGBsp6HTw5aOl0",
+						"url": "https://www.imdb.com/list/ls564805761/"
+					},
+					{
+						"type": "source",
+						"sourceType": "url",
+						"id": "8NBYnNwtjquGAiMx",
+						"url": "https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets"
+					},
+					{
+						"type": "source",
+						"sourceType": "url",
+						"id": "wQ76P6ki3MaVG8cY",
+						"url": "https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24"
+					},
+					{
+						"type": "source",
+						"sourceType": "url",
+						"id": "wohVjrNgTcYTpXR6",
+						"url": "https://www.bollywoodhungama.com/celebrity/shah-rukh-khan/box-office/"
+					},
+					{
+						"type": "source",
+						"sourceType": "url",
+						"id": "hYlqaexsbF5NZ93z",
+						"url": "https://www.sacnilk.com/news/List_Of_Shah_Rukh_Khan_Top_10_Box_Office_Movies"
+					}
+				],
+				"finishReason": "stop",
+				"rawFinishReason": "stop",
+				"usage": {
+					"inputTokens": 43,
+					"inputTokenDetails": {
+						"noCacheTokens": 43
+					},
+					"outputTokens": 403,
+					"outputTokenDetails": {
+						"textTokens": 403,
+						"reasoningTokens": 0
+					},
+					"totalTokens": 446,
+					"raw": {
+						"prompt_tokens": 43,
+						"completion_tokens": 403,
+						"total_tokens": 446
+					},
+					"reasoningTokens": 0
+				},
+				"warnings": [],
+				"request": {
+					"body": {
+						"model": "sonar-pro",
+						"return_images": true,
+						"messages": [
+							{
+								"role": "user",
+								"content": "Perform a web search for the following query and return the top 3 relevant results with titles, snippets, and URLs.\n\t\t\t\tSearch Query: \"top 5 Shah Rukh Khan movies by total earnings\""
+							}
+						]
+					}
+				},
+				"response": {
+					"id": "2f514cb5-801b-4b28-9ffc-ee1668e8ade6",
+					"timestamp": "2025-12-30T23:48:48.000Z",
+					"modelId": "sonar-pro",
+					"headers": {
+						"cf-cache-status": "DYNAMIC",
+						"cf-ray": "9b656e0608a6c1a1-BLR",
+						"connection": "keep-alive",
+						"content-encoding": "gzip",
+						"content-type": "application/json",
+						"date": "Tue, 30 Dec 2025 23:48:48 GMT",
+						"server": "cloudflare",
+						"set-cookie": "__cf_bm=7yji0EiEwqOsW31bM8O6k92UJucTsYMONvvs.AqHfiM-1767138528-1.0.1.1-NmonNnKeWusgWvcjEbkYCYaBu7ZHdgPj8ZzEJpTrHH484al2Uhhe5VtWZwMAKEGobAu4gDpOdC6DKvNQfX3ETa0_vkPmfSCbJ8gSXM1aA2Q; path=/; expires=Wed, 31-Dec-25 00:18:48 GMT; domain=.perplexity.ai; HttpOnly; Secure; SameSite=None",
+						"strict-transport-security": "max-age=15552000; includeSubDomains; preload",
+						"transfer-encoding": "chunked"
+					},
+					"body": {
+						"id": "2f514cb5-801b-4b28-9ffc-ee1668e8ade6",
+						"model": "sonar-pro",
+						"created": 1767138528,
+						"usage": {
+							"prompt_tokens": 43,
+							"completion_tokens": 403,
+							"total_tokens": 446,
+							"search_context_size": "low",
+							"cost": {
+								"input_tokens_cost": 0,
+								"output_tokens_cost": 0.006,
+								"request_cost": 0.006,
+								"total_cost": 0.012
+							}
+						},
+						"citations": [
+							"https://www.imdb.com/list/ls564805761/",
+							"https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets",
+							"https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24",
+							"https://www.bollywoodhungama.com/celebrity/shah-rukh-khan/box-office/",
+							"https://www.sacnilk.com/news/List_Of_Shah_Rukh_Khan_Top_10_Box_Office_Movies"
+						],
+						"search_results": [
+							{
+								"title": "Shah Rukh Khan Top 10 highest grossing movies and their verdict",
+								"url": "https://www.imdb.com/list/ls564805761/",
+								"date": "2023-03-09",
+								"last_updated": "2025-12-30",
+								"snippet": "Shah Rukh Khan Top 10 highest grossing movies and their verdict · 1. Jawan · 2. Pathaan · 3. Dunki · 4. Chennai Express · 5. Happy New Year · 6. Dilwale · 7. Raees · 8.",
+								"source": "web"
+							},
+							{
+								"title": "List of highest-grossing Indian films in overseas markets - Wikipedia",
+								"url": "https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets",
+								"date": "2016-03-20",
+								"last_updated": "2025-12-30",
+								"snippet": "Shah Rukh Khan also holds the record for having starred in the annual highest-grossing Hindi film in overseas markets for 15 individual years, the highest for ...",
+								"source": "web"
+							},
+							{
+								"title": "Shahrukh Khan Top Overseas Grossers - Box Office India",
+								"url": "https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24",
+								"date": "2024-11-01",
+								"last_updated": "2025-07-12",
+								"snippet": "Jawan, 1,75,14,00,000 · Animal, 1,68,59,00,000 · Pathaan ; Bahubali 2 - The Conclusion, 69,63,00,000 · Gadar 2 - The Katha Continues, 62,96,00,000 · Jawan ; 2.0, 5,75 ...",
+								"source": "web"
+							},
+							{
+								"title": "India Box Office Collection - Shah Rukh Khan - Bollywood Hungama",
+								"url": "https://www.bollywoodhungama.com/celebrity/shah-rukh-khan/box-office/",
+								"date": "2024-03-11",
+								"last_updated": "2025-12-30",
+								"snippet": "India Box Office Collection ; Zero, 2018-12-21 21 Dec 2018, 19.35 19.35 ; Jab Harry Met Sejal, 2017-08-04 04 Aug 2017, 15.25 15.25 ; Raees, 2017-01-25 25 Jan 2017 ...",
+								"source": "web"
+							},
+							{
+								"title": "List Of Shah Rukh Khan Top 10 Box Office Movies (India Net) - Sacnilk",
+								"url": "https://www.sacnilk.com/news/List_Of_Shah_Rukh_Khan_Top_10_Box_Office_Movies",
+								"date": "2025-03-18",
+								"last_updated": "2025-12-30",
+								"snippet": "The following list tops with Jawan which clocked around ₹ 640.25 Cr club at the box office, making the highest-grossing film for Shah Rukh Khan.",
+								"source": "web"
+							}
+						],
+						"images": [
+							{
+								"image_url": "https://i.ytimg.com/vi/Jt-JsDP7EEY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLA8801miCo6jLeQ8NbJTm53WYFVJw",
+								"origin_url": "https://www.youtube.com/watch?v=Jt-JsDP7EEY",
+								"height": 386,
+								"width": 686,
+								"title": "shahrukh khan top 5 highest grossing movies 2024-2025 #king ..."
+							},
+							{
+								"image_url": "https://www.koimoi.com/wp-content/new-galleries/2017/07/Here-Are-Shah-Rukh-Khan%E2%80%99s-Top-5-Highest-Grossing-Films-Of-2014-2017.jpg",
+								"origin_url": "https://www.koimoi.com/box-office/shah-rukh-khans-top-5-highest-grossing-films-2014-2017/",
+								"height": 420,
+								"width": 679,
+								"title": "Here Are Shah Rukh Khan's Top 5 Highest Grossing Films Of 2014-2017"
+							},
+							{
+								"image_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiPXw5xNX3a8mh4qpClxIxtb-WjRdRgKOhyphenhyphenGn0q_NBGDj5qks1dmWq1jjBTl2VmQJdRZuAxG5n6AKn4tJ5c_gMPR3-eGJwLBqmyOhWpKjTLULAw7wUPNjB22YW0N1RZJAaZTmA0crDdqr8V/s1600/tyejuewie3ti.jpg",
+								"origin_url": "https://boxofficeindiarecords.blogspot.com/2017/02/raees-is-shahrukh-khan-40th-successful.html",
+								"height": 768,
+								"width": 823,
+								"title": "Raees Is 40th Successful Film for Shahrukh Khan"
+							}
+						],
+						"object": "chat.completion",
+						"choices": [
+							{
+								"index": 0,
+								"message": {
+									"role": "assistant",
+									"content": "Here are the top 3 relevant search results for \"top 5 Shah Rukh Khan movies by total earnings\":\n\n[1]  \n**Title:** Shah Rukh Khan Top 10 highest grossing movies and their verdict  \n**Snippet:** Shah Rukh Khan Top 10 highest grossing movies and their verdict · 1. Jawan · 2. Pathaan · 3. Dunki · 4. Chennai Express · 5. Happy New Year · 6. Dilwale · 7. Raees · 8. (Lists worldwide gross: Jawan 1152cr, Pathaan 1050.8cr, Dunki 458.4cr, etc.)  \n**URL:** https://www.imdb.com/list/ls564805761/[1]\n\n[2]  \n**Title:** List of highest-grossing Indian films in overseas markets - Wikipedia  \n**Snippet:** Shah Rukh Khan also holds the record for having starred in the annual highest-grossing Hindi film in overseas markets for 15 individual years... (Mentions Pathaan and Jawan in top overseas earners across markets like US, UK, Australia.)  \n**URL:** https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets[2]\n\n[3]  \n**Title:** Shahrukh Khan Top Overseas Grossers - Box Office India  \n**Snippet:** Jawan, 1,75,14,00,000 · Animal, 1,68,59,00,000 · Pathaan ; ... Top Grosses Overseas: 1. Dilwale 2. My Name Is Khan 3. Chennai Express 4. Happy New Year... Top Grosses Worldwide: 1. Chennai Express 2. Dilwale...  \n**URL:** https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24[3]"
+								},
+								"delta": {
+									"role": "assistant",
+									"content": ""
+								},
+								"finish_reason": "stop"
+							}
+						]
+					},
+					"messages": [
+						{
+							"role": "assistant",
+							"content": [
+								{
+									"type": "text",
+									"text": "Here are the top 3 relevant search results for \"top 5 Shah Rukh Khan movies by total earnings\":\n\n[1]  \n**Title:** Shah Rukh Khan Top 10 highest grossing movies and their verdict  \n**Snippet:** Shah Rukh Khan Top 10 highest grossing movies and their verdict · 1. Jawan · 2. Pathaan · 3. Dunki · 4. Chennai Express · 5. Happy New Year · 6. Dilwale · 7. Raees · 8. (Lists worldwide gross: Jawan 1152cr, Pathaan 1050.8cr, Dunki 458.4cr, etc.)  \n**URL:** https://www.imdb.com/list/ls564805761/[1]\n\n[2]  \n**Title:** List of highest-grossing Indian films in overseas markets - Wikipedia  \n**Snippet:** Shah Rukh Khan also holds the record for having starred in the annual highest-grossing Hindi film in overseas markets for 15 individual years... (Mentions Pathaan and Jawan in top overseas earners across markets like US, UK, Australia.)  \n**URL:** https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets[2]\n\n[3]  \n**Title:** Shahrukh Khan Top Overseas Grossers - Box Office India  \n**Snippet:** Jawan, 1,75,14,00,000 · Animal, 1,68,59,00,000 · Pathaan ; ... Top Grosses Overseas: 1. Dilwale 2. My Name Is Khan 3. Chennai Express 4. Happy New Year... Top Grosses Worldwide: 1. Chennai Express 2. Dilwale...  \n**URL:** https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24[3]"
+								}
+							]
+						}
+					]
+				},
+				"providerMetadata": {
+					"perplexity": {
+						"images": [
+							{
+								"imageUrl": "https://i.ytimg.com/vi/Jt-JsDP7EEY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLA8801miCo6jLeQ8NbJTm53WYFVJw",
+								"originUrl": "https://www.youtube.com/watch?v=Jt-JsDP7EEY",
+								"height": 386,
+								"width": 686
+							},
+							{
+								"imageUrl": "https://www.koimoi.com/wp-content/new-galleries/2017/07/Here-Are-Shah-Rukh-Khan%E2%80%99s-Top-5-Highest-Grossing-Films-Of-2014-2017.jpg",
+								"originUrl": "https://www.koimoi.com/box-office/shah-rukh-khans-top-5-highest-grossing-films-2014-2017/",
+								"height": 420,
+								"width": 679
+							},
+							{
+								"imageUrl": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiPXw5xNX3a8mh4qpClxIxtb-WjRdRgKOhyphenhyphenGn0q_NBGDj5qks1dmWq1jjBTl2VmQJdRZuAxG5n6AKn4tJ5c_gMPR3-eGJwLBqmyOhWpKjTLULAw7wUPNjB22YW0N1RZJAaZTmA0crDdqr8V/s1600/tyejuewie3ti.jpg",
+								"originUrl": "https://boxofficeindiarecords.blogspot.com/2017/02/raees-is-shahrukh-khan-40th-successful.html",
+								"height": 768,
+								"width": 823
+							}
+						],
+						"usage": {
+							"citationTokens": null,
+							"numSearchQueries": null
+						}
+					}
+				}
+			}
+		],
+		"_output": "Here are the top 3 relevant search results for \"top 5 Shah Rukh Khan movies by total earnings\":\n\n[1]  \n**Title:** Shah Rukh Khan Top 10 highest grossing movies and their verdict  \n**Snippet:** Shah Rukh Khan Top 10 highest grossing movies and their verdict · 1. Jawan · 2. Pathaan · 3. Dunki · 4. Chennai Express · 5. Happy New Year · 6. Dilwale · 7. Raees · 8. (Lists worldwide gross: Jawan 1152cr, Pathaan 1050.8cr, Dunki 458.4cr, etc.)  \n**URL:** https://www.imdb.com/list/ls564805761/[1]\n\n[2]  \n**Title:** List of highest-grossing Indian films in overseas markets - Wikipedia  \n**Snippet:** Shah Rukh Khan also holds the record for having starred in the annual highest-grossing Hindi film in overseas markets for 15 individual years... (Mentions Pathaan and Jawan in top overseas earners across markets like US, UK, Australia.)  \n**URL:** https://en.wikipedia.org/wiki/List_of_highest-grossing_Indian_films_in_overseas_markets[2]\n\n[3]  \n**Title:** Shahrukh Khan Top Overseas Grossers - Box Office India  \n**Snippet:** Jawan, 1,75,14,00,000 · Animal, 1,68,59,00,000 · Pathaan ; ... Top Grosses Overseas: 1. Dilwale 2. My Name Is Khan 3. Chennai Express 4. Happy New Year... Top Grosses Worldwide: 1. Chennai Express 2. Dilwale...  \n**URL:** https://www.boxofficeindia.com/overseas-total-gross.php?actorid=4&role=24[3]",
+		"totalUsage": {
+			"inputTokens": 43,
+			"inputTokenDetails": {
+				"noCacheTokens": 43
+			},
+			"outputTokens": 403,
+			"outputTokenDetails": {
+				"textTokens": 403,
+				"reasoningTokens": 0
+			},
+			"totalTokens": 446,
+			"reasoningTokens": 0
+		}
+	}
+}

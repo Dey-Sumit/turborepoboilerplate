@@ -1,0 +1,481 @@
+import React, {useMemo} from 'react';
+import {useCurrentFrame, useVideoConfig} from 'remotion';
+import {getThreePhaseAnimationStyle} from '../../animations/get-three-phase-animation-style';
+import {mergeAnimationStyles} from '../../animations/merge-animation-styles';
+import {
+	calculateFadeInOpacity,
+	calculateFadeOutOpacity,
+} from '../video/calculate-fade';
+import {parseCssString} from '../../utils/parse-css-string';
+import {ShapeItem, BorderStyle, FillPattern} from './shape-item-type';
+import {ArrowRight} from './svg-shapes/arrow-right';
+import {ArrowLeft} from './svg-shapes/arrow-left';
+import {ArrowUp} from './svg-shapes/arrow-up';
+import {ArrowDown} from './svg-shapes/arrow-down';
+
+/**
+ * Helper function to get strokeDasharray based on border style
+ */
+const getStrokeDasharray = (borderStyle: BorderStyle | undefined): string => {
+	switch (borderStyle) {
+		case 'dashed':
+			return '10,5';
+		case 'dotted':
+			return '2,3';
+		case 'solid':
+		default:
+			return 'none';
+	}
+};
+
+/**
+ * Helper function to get fill value (either solid color or pattern reference)
+ */
+const getFillValue = (
+	fillPattern: FillPattern | undefined,
+	fillColor: string,
+	patternId: string,
+): string => {
+	if (!fillPattern || fillPattern === 'none') {
+		return fillColor;
+	}
+	return `url(#${patternId})`;
+};
+
+/**
+ * ShapeLayer Component
+ *
+ * Remotion layer component for rendering shape items in the video composition.
+ * Supports custom SVG shapes with full control over styling.
+ *
+ * Features:
+ * - Fade in/out effects
+ * - Rotation via CSS transform
+ * - Opacity control
+ * - Border styles (solid, dashed, dotted)
+ * - Fill patterns (stripes, dots, grid)
+ * - Custom CSS styling
+ * - Responsive to item dimensions
+ *
+ * @param item - ShapeItem to render
+ */
+export const ShapeLayer: React.FC<{item: ShapeItem}> = ({item}) => {
+	const frame = useCurrentFrame();
+	const {fps, durationInFrames} = useVideoConfig();
+
+	// Calculate fade in/out opacity
+	const opacity = useMemo(() => {
+		const inOpacity = calculateFadeInOpacity({
+			currentFrame: frame,
+			fadeInDurationInSeconds: item.fadeInDurationInSeconds,
+			framesPerSecond: fps,
+		});
+		const outOpacity = calculateFadeOutOpacity({
+			currentFrame: frame,
+			fadeOutDurationInSeconds: item.fadeOutDurationInSeconds,
+			framesPerSecond: fps,
+			totalDurationInFrames: durationInFrames,
+		});
+		return inOpacity * outOpacity * item.opacity;
+	}, [
+		item.fadeInDurationInSeconds,
+		fps,
+		frame,
+		item.opacity,
+		durationInFrames,
+		item.fadeOutDurationInSeconds,
+	]);
+
+	// Parse custom CSS if provided
+	const cssStyles = useMemo(
+		() => parseCssString(item.css || ''),
+		[item.css],
+	);
+
+	// Apply three-phase animation styles
+	const animationStyle = useMemo(() => {
+		if (item.animations) {
+			return getThreePhaseAnimationStyle(
+				item.animations,
+				frame,
+				item.from,
+				item.durationInFrames,
+				fps,
+			);
+		}
+		return {};
+	}, [item.animations, frame, item.from, item.durationInFrames, fps]);
+
+	// Container style for positioning and rotation
+	const containerStyle: React.CSSProperties = useMemo(() => {
+		return {
+			position: 'absolute',
+			left: item.left,
+			top: item.top,
+			width: item.width,
+			height: item.height,
+			opacity,
+			transform: `rotate(${item.rotation}deg)`,
+			// Apply custom CSS styles
+			...cssStyles,
+		};
+	}, [
+		item.left,
+		item.top,
+		item.width,
+		item.height,
+		opacity,
+		item.rotation,
+		cssStyles,
+	]);
+
+	// Merge animation styles with container style intelligently
+	const mergedStyle = useMemo(() => {
+		return mergeAnimationStyles(containerStyle, animationStyle);
+	}, [containerStyle, animationStyle]);
+
+	// Generate unique pattern ID for this shape
+	const patternId = useMemo(() => `pattern-${item.id}`, [item.id]);
+
+	// Get stroke dasharray based on border style
+	const strokeDasharray = useMemo(
+		() => getStrokeDasharray(item.borderStyle),
+		[item.borderStyle],
+	);
+
+	// Get fill value (solid color or pattern reference)
+	const fillValue = useMemo(
+		() => getFillValue(item.fillPattern, item.fill, patternId),
+		[item.fillPattern, item.fill, patternId],
+	);
+
+	/**
+	 * Render SVG pattern definitions based on fill pattern
+	 */
+	const renderPatternDefs = () => {
+		if (!item.fillPattern || item.fillPattern === 'none') {
+			return null;
+		}
+
+		const patternColor = item.fill;
+
+		switch (item.fillPattern) {
+			case 'stripes-horizontal':
+				return (
+					<defs>
+						<pattern
+							id={patternId}
+							patternUnits="userSpaceOnUse"
+							width="10"
+							height="10"
+						>
+							<rect width="10" height="10" fill={patternColor} opacity="0.2" />
+							<line
+								x1="0"
+								y1="5"
+								x2="10"
+								y2="5"
+								stroke={patternColor}
+								strokeWidth="2"
+							/>
+						</pattern>
+					</defs>
+				);
+
+			case 'stripes-vertical':
+				return (
+					<defs>
+						<pattern
+							id={patternId}
+							patternUnits="userSpaceOnUse"
+							width="10"
+							height="10"
+						>
+							<rect width="10" height="10" fill={patternColor} opacity="0.2" />
+							<line
+								x1="5"
+								y1="0"
+								x2="5"
+								y2="10"
+								stroke={patternColor}
+								strokeWidth="2"
+							/>
+						</pattern>
+					</defs>
+				);
+
+			case 'stripes-diagonal':
+				return (
+					<defs>
+						<pattern
+							id={patternId}
+							patternUnits="userSpaceOnUse"
+							width="10"
+							height="10"
+						>
+							<rect width="10" height="10" fill={patternColor} opacity="0.2" />
+							<line
+								x1="0"
+								y1="0"
+								x2="10"
+								y2="10"
+								stroke={patternColor}
+								strokeWidth="2"
+							/>
+						</pattern>
+					</defs>
+				);
+
+			case 'dots':
+				return (
+					<defs>
+						<pattern
+							id={patternId}
+							patternUnits="userSpaceOnUse"
+							width="10"
+							height="10"
+						>
+							<rect width="10" height="10" fill={patternColor} opacity="0.2" />
+							<circle cx="5" cy="5" r="2" fill={patternColor} />
+						</pattern>
+					</defs>
+				);
+
+			case 'grid':
+				return (
+					<defs>
+						<pattern
+							id={patternId}
+							patternUnits="userSpaceOnUse"
+							width="10"
+							height="10"
+						>
+							<rect width="10" height="10" fill={patternColor} opacity="0.2" />
+							<line
+								x1="0"
+								y1="5"
+								x2="10"
+								y2="5"
+								stroke={patternColor}
+								strokeWidth="1"
+							/>
+							<line
+								x1="5"
+								y1="0"
+								x2="5"
+								y2="10"
+								stroke={patternColor}
+								strokeWidth="1"
+							/>
+						</pattern>
+					</defs>
+				);
+
+			default:
+				return null;
+		}
+	};
+
+	/**
+	 * Render the appropriate shape based on the variant
+	 */
+	const renderShape = () => {
+		switch (item.variant) {
+			case 'circle': {
+				// Calculate radius and center based on dimensions
+				const radius = Math.min(item.width, item.height) / 2;
+				const cx = item.width / 2;
+				const cy = item.height / 2;
+				return (
+					<svg
+						width={item.width}
+						height={item.height}
+						viewBox={`0 0 ${item.width} ${item.height}`}
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						{renderPatternDefs()}
+						<circle
+							cx={cx}
+							cy={cy}
+							r={radius - item.strokeWidth / 2}
+							fill={fillValue}
+							stroke={item.stroke}
+							strokeWidth={item.strokeWidth}
+							strokeDasharray={strokeDasharray}
+						/>
+					</svg>
+				);
+			}
+
+			case 'rectangle': {
+				const cornerRadius = item.cornerRadius || 0;
+				return (
+					<svg
+						width={item.width}
+						height={item.height}
+						viewBox={`0 0 ${item.width} ${item.height}`}
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						{renderPatternDefs()}
+						<rect
+							x={item.strokeWidth / 2}
+							y={item.strokeWidth / 2}
+							width={item.width - item.strokeWidth}
+							height={item.height - item.strokeWidth}
+							rx={cornerRadius}
+							ry={cornerRadius}
+							fill={fillValue}
+							stroke={item.stroke}
+							strokeWidth={item.strokeWidth}
+							strokeDasharray={strokeDasharray}
+						/>
+					</svg>
+				);
+			}
+
+			case 'triangle': {
+				// Triangle pointing up, centered
+				const cx = item.width / 2;
+				const top = item.strokeWidth;
+				const bottom = item.height - item.strokeWidth;
+				const left = item.strokeWidth;
+				const right = item.width - item.strokeWidth;
+
+				const points = `${cx},${top} ${right},${bottom} ${left},${bottom}`;
+
+				return (
+					<svg
+						width={item.width}
+						height={item.height}
+						viewBox={`0 0 ${item.width} ${item.height}`}
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						{renderPatternDefs()}
+						<polygon
+							points={points}
+							fill={fillValue}
+							stroke={item.stroke}
+							strokeWidth={item.strokeWidth}
+							strokeDasharray={strokeDasharray}
+							strokeLinejoin="round"
+						/>
+					</svg>
+				);
+			}
+
+			case 'star': {
+				// Star with configurable points (default: 5)
+				const numPoints = item.points || 5;
+				const cx = item.width / 2;
+				const cy = item.height / 2;
+				const outerRadius = Math.min(item.width, item.height) / 2 - item.strokeWidth;
+				const innerRadius = outerRadius * 0.4;
+
+				// Generate star points
+				const starPoints: string[] = [];
+				for (let i = 0; i < numPoints * 2; i++) {
+					const angle = (Math.PI * i) / numPoints - Math.PI / 2;
+					const radius = i % 2 === 0 ? outerRadius : innerRadius;
+					const x = cx + Math.cos(angle) * radius;
+					const y = cy + Math.sin(angle) * radius;
+					starPoints.push(`${x},${y}`);
+				}
+
+				return (
+					<svg
+						width={item.width}
+						height={item.height}
+						viewBox={`0 0 ${item.width} ${item.height}`}
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						{renderPatternDefs()}
+						<polygon
+							points={starPoints.join(' ')}
+							fill={fillValue}
+							stroke={item.stroke}
+							strokeWidth={item.strokeWidth}
+							strokeDasharray={strokeDasharray}
+							strokeLinejoin="round"
+						/>
+					</svg>
+				);
+			}
+
+			case 'arrow-right': {
+				return (
+					<ArrowRight
+						fill={item.fill}
+						stroke={item.stroke}
+						strokeWidth={item.strokeWidth}
+						width={item.width}
+						height={item.height}
+						strokeDasharray={strokeDasharray}
+						fillValue={fillValue}
+						patternId={patternId}
+						fillPattern={item.fillPattern}
+						renderPatternDefs={renderPatternDefs}
+					/>
+				);
+			}
+
+			case 'arrow-left': {
+				return (
+					<ArrowLeft
+						fill={item.fill}
+						stroke={item.stroke}
+						strokeWidth={item.strokeWidth}
+						width={item.width}
+						height={item.height}
+						strokeDasharray={strokeDasharray}
+						fillValue={fillValue}
+						patternId={patternId}
+						fillPattern={item.fillPattern}
+						renderPatternDefs={renderPatternDefs}
+					/>
+				);
+			}
+
+			case 'arrow-up': {
+				return (
+					<ArrowUp
+						fill={item.fill}
+						stroke={item.stroke}
+						strokeWidth={item.strokeWidth}
+						width={item.width}
+						height={item.height}
+						strokeDasharray={strokeDasharray}
+						fillValue={fillValue}
+						patternId={patternId}
+						fillPattern={item.fillPattern}
+						renderPatternDefs={renderPatternDefs}
+					/>
+				);
+			}
+
+			case 'arrow-down': {
+				return (
+					<ArrowDown
+						fill={item.fill}
+						stroke={item.stroke}
+						strokeWidth={item.strokeWidth}
+						width={item.width}
+						height={item.height}
+						strokeDasharray={strokeDasharray}
+						fillValue={fillValue}
+						patternId={patternId}
+						fillPattern={item.fillPattern}
+						renderPatternDefs={renderPatternDefs}
+					/>
+				);
+			}
+
+			default: {
+				// TypeScript exhaustiveness check - should never reach here
+				const _exhaustive: never = item.variant;
+				return null;
+			}
+		}
+	};
+
+	return <div style={mergedStyle}>{renderShape()}</div>;
+};

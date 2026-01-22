@@ -1,0 +1,331 @@
+import {loadFont, fontFamily} from '@remotion/google-fonts/FiraCode';
+import type {HighlightedCode} from 'codehike/code';
+import {Pre} from 'codehike/code';
+import React, {useEffect, useMemo, useState} from 'react';
+import {
+	AbsoluteFill,
+	cancelRender,
+	continueRender,
+	delayRender,
+	useCurrentFrame,
+	useVideoConfig,
+} from 'remotion';
+import useEditorStore from '../../../zustand/editor-store';
+import {getThreePhaseAnimationStyle} from '../../animations/get-three-phase-animation-style';
+import {mergeAnimationStyles} from '../../animations/merge-animation-styles';
+import {
+	calculateFadeInOpacity,
+	calculateFadeOutOpacity,
+} from '../video/calculate-fade';
+import {focus} from './annotations/focus';
+import {highlight} from './annotations/highlight';
+import {
+	tokenTransitions,
+	useTokenTransitions,
+} from './annotations/token-transitions';
+import {CodeItem} from './code-item-type';
+import {useProcessCode} from './use-process-code';
+
+/**
+ * Hook to load Fira Code font with proper Remotion delay/continue render handling
+ */
+const useLoadFiraCodeFont = () => {
+	const [fontLoaded, setFontLoaded] = useState(false);
+
+	useEffect(() => {
+		const handle = delayRender('Loading Fira Code font');
+
+		const {waitUntilDone} = loadFont();
+		waitUntilDone()
+			.then(() => {
+				continueRender(handle);
+				setFontLoaded(true);
+			})
+			.catch((err: Error) => {
+				cancelRender(err);
+			});
+	}, []);
+
+	return fontLoaded;
+};
+
+/**
+ * CodeLayerWrapper - HOC that handles code processing
+ * Only renders CodeLayerInner once code is successfully processed
+ * Also processes previous code item if it exists for token transitions
+ */
+export const CodeLayer: React.FC<{
+	item: CodeItem;
+	previousItemId?: string;
+}> = ({item, previousItemId}) => {
+	// Load Fira Code font (blocks rendering until loaded)
+	const fontLoaded = useLoadFiraCodeFont();
+
+	// Get previous item from store if it exists and is a code type
+	const previousCodeItem = useEditorStore((state) => {
+		if (!previousItemId) return null;
+		const prevItem = state.compositionState.items[previousItemId];
+		if (prevItem?.type === 'code') {
+			return prevItem;
+		}
+		return null;
+	});
+
+	const {processedCode, isProcessing, error} = useProcessCode(
+		item.code,
+		item.theme,
+	);
+
+	// Process previous code item if it's a code type
+	// Use current item's theme for previous code to ensure consistent transition
+	const {
+		processedCode: previousProcessedCode,
+		isProcessing: isPreviousProcessing,
+	} = useProcessCode(previousCodeItem?.code ?? '', item.theme);
+
+	// Show loading state (wait for font, current and previous code to process)
+	if (
+		!fontLoaded ||
+		isProcessing ||
+		(previousCodeItem && isPreviousProcessing)
+	) {
+		return <CodeLayerPlaceholder item={item} message="Processing code..." />;
+	}
+
+	// Show error state
+	if (error || !processedCode) {
+		return (
+			<CodeLayerPlaceholder
+				item={item}
+				message={error || 'Failed to process code'}
+				isError
+			/>
+		);
+	}
+
+	// Code is processed, render the actual layer
+	// Pass previousProcessedCode for token transitions (only if previous item was code type)
+	return (
+		<CodeLayerInner
+			item={item}
+			processedCode={processedCode}
+			previousProcessedCode={
+				previousCodeItem ? previousProcessedCode : undefined
+			}
+		/>
+	);
+};
+
+CodeLayer.displayName = 'CodeLayer';
+
+/**
+ * CodeLayerPlaceholder - Shows loading/error states
+ */
+const CodeLayerPlaceholder: React.FC<{
+	item: CodeItem;
+	message: string;
+	isError?: boolean;
+}> = ({item, message, isError}) => {
+	const frame = useCurrentFrame();
+	const {fps, durationInFrames} = useVideoConfig();
+
+	const opacity = useMemo(() => {
+		const inOpacity = calculateFadeInOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeInDurationInSeconds: item.fadeInDurationInSeconds,
+			framesPerSecond: fps,
+		});
+		const outOpacity = calculateFadeOutOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeOutDurationInSeconds: item.fadeOutDurationInSeconds,
+			framesPerSecond: fps,
+			totalDurationInFrames: durationInFrames,
+		});
+		return inOpacity * outOpacity * item.opacity;
+	}, [
+		frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+		fps,
+		durationInFrames,
+		item.fadeInDurationInSeconds,
+		item.fadeOutDurationInSeconds,
+		item.opacity,
+	]);
+
+	// Apply three-phase animation styles
+	const animationStyle = useMemo(() => {
+		if (item.animations) {
+			return getThreePhaseAnimationStyle(
+				item.animations,
+				frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+				
+				item.durationInFrames,
+				fps,
+			);
+		}
+		return {};
+	}, [item.animations, frame, item.from, item.durationInFrames, fps]);
+
+	const baseStyle: React.CSSProperties = {
+		left: item.left,
+		top: item.top,
+		width: item.width,
+		height: item.height,
+		position: 'absolute',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: isError ? '#2d1f1f' : item.backgroundColor,
+		borderRadius: item.borderRadius,
+		opacity,
+		transform: `rotate(${item.rotation}deg)`,
+	};
+
+	// Merge animation styles intelligently
+	const mergedStyle = useMemo(() => {
+		return mergeAnimationStyles(baseStyle, animationStyle);
+	}, [baseStyle, animationStyle]);
+
+	return (
+		<AbsoluteFill style={mergedStyle}>
+			<div
+				style={{
+					color: isError ? '#ff6b6b' : '#888',
+					fontFamily: 'sans-serif',
+				}}
+			>
+				{message}
+			</div>
+		</AbsoluteFill>
+	);
+};
+
+/**
+ * CodeLayerInner - Renders the actual code using CodeHike
+ * Only mounted when processedCode is available
+ */
+const CodeLayerInner: React.FC<{
+	item: CodeItem;
+	processedCode: HighlightedCode;
+	previousProcessedCode?: HighlightedCode | null;
+}> = ({item, processedCode, previousProcessedCode}) => {
+	const frame = useCurrentFrame();
+	const {fps, durationInFrames} = useVideoConfig();
+
+	// Token transitions for smooth code morphing
+	// If previous code exists, transition from previous to current
+	// If no previous code or transitions disabled, use current code as both old and new
+	const tokenTransitionDurationInFrames = item.tokenTransitionDuration * fps;
+	const oldCode = item.disableTokenTransitions
+		? processedCode
+		: (previousProcessedCode ?? undefined);
+	const {code, ref} = useTokenTransitions(
+		oldCode,
+		processedCode,
+		tokenTransitionDurationInFrames,
+	);
+
+	// Calculate fade opacity
+	const opacity = useMemo(() => {
+		const inOpacity = calculateFadeInOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeInDurationInSeconds: item.fadeInDurationInSeconds,
+			framesPerSecond: fps,
+		});
+		const outOpacity = calculateFadeOutOpacity({
+			currentFrame: frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+			fadeOutDurationInSeconds: item.fadeOutDurationInSeconds,
+			framesPerSecond: fps,
+			totalDurationInFrames: durationInFrames,
+		});
+		return inOpacity * outOpacity * item.opacity;
+	}, [
+		frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+		fps,
+		durationInFrames,
+		item.fadeInDurationInSeconds,
+		item.fadeOutDurationInSeconds,
+		item.opacity,
+	]);
+
+	// Apply three-phase animation styles
+	const animationStyle = useMemo(() => {
+		if (item.animations) {
+			return getThreePhaseAnimationStyle(
+				item.animations,
+				frame,
+				0, // Frame is already relative to item start due to Sequence wrapper
+				
+				item.durationInFrames,
+				fps,
+			);
+		}
+		return {};
+	}, [item.animations, frame, item.from, item.durationInFrames, fps]);
+
+	// Base style for container
+	const baseStyle: React.CSSProperties = useMemo(
+		() => ({
+			left: item.left,
+			top: item.top,
+			width: item.width,
+			height: item.height,
+			position: 'absolute',
+			opacity,
+			transform: `rotate(${item.rotation}deg)`,
+			backgroundColor: item.backgroundColor,
+			borderRadius: item.borderRadius,
+			padding: item.padding,
+			overflow: 'auto',
+			boxSizing: 'border-box',
+		}),
+		[
+			item.left,
+			item.top,
+			item.width,
+			item.height,
+			item.rotation,
+			item.backgroundColor,
+			item.borderRadius,
+			item.padding,
+			opacity,
+		],
+	);
+
+	// Merge animation styles with base style intelligently
+	const mergedStyle = useMemo(() => {
+		return mergeAnimationStyles(baseStyle, animationStyle);
+	}, [baseStyle, animationStyle]);
+
+	// Use transitioned code if available, otherwise use processed code
+	const codeToRender = code || processedCode;
+
+	return (
+		<div style={mergedStyle} className="flex items-center justify-center">
+			<Pre
+				ref={ref}
+				code={codeToRender}
+				handlers={[tokenTransitions, highlight, focus]}
+				className="w-max leading-8"
+				data-component="code-pre"
+				style={{
+					fontFamily,
+					fontFeatureSettings: '"liga" 1, "calt" 1',
+					WebkitFontFeatureSettings: '"liga" 1, "calt" 1',
+					fontVariantLigatures: 'contextual',
+					fontSize: item.fontSize,
+					lineHeight: item.lineHeight,
+					margin: 0,
+				}}
+			/>
+		</div>
+	);
+};
+
+CodeLayerInner.displayName = 'CodeLayerInner';
