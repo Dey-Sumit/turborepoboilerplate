@@ -1,15 +1,255 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+@import '@fontsource-variable/inter';
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+@custom-variant dark (&:is(.dark *));
+
+@utility editor-starter-focus-ring {
+	@apply focus-visible:border-editor-starter-accent border border-transparent outline-hidden data-[focused=true]:border-[var(--color-editor-starter-accent)];
+}
+
+@utility editor-starter-field {
+	@apply bg-editor-starter-bg rounded-sm border border-transparent outline-hidden hover:border-neutral-700 focus:border-[var(--color-editor-starter-accent)] data-[focused=true]:border-[var(--color-editor-starter-accent)];
 }
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+	overscroll-behavior-x: none; /* Prevent accidential back gesture when trying to scroll the timeline */
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+:root {
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.145 0 0);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.145 0 0);
+	--primary: oklch(0.205 0 0);
+	--primary-foreground: oklch(0.985 0 0);
+	--secondary: oklch(0.97 0 0);
+	--secondary-foreground: oklch(0.205 0 0);
+	--muted: oklch(0.97 0 0);
+	--muted-foreground: oklch(0.556 0 0);
+	--accent: oklch(0.97 0 0);
+	--accent-foreground: oklch(0.205 0 0);
+	--destructive: oklch(0.58 0.22 27);
+	--border: oklch(0.922 0 0);
+	--input: oklch(0.922 0 0);
+	--ring: oklch(0.708 0 0);
+	--chart-1: oklch(0.809 0.105 251.813);
+	--chart-2: oklch(0.623 0.214 259.815);
+	--chart-3: oklch(0.546 0.245 262.881);
+	--chart-4: oklch(0.488 0.243 264.376);
+	--chart-5: oklch(0.424 0.199 265.638);
+	--radius: 0;
+	--sidebar: oklch(0.985 0 0);
+	--sidebar-foreground: oklch(0.145 0 0);
+	--sidebar-primary: oklch(0.205 0 0);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.97 0 0);
+	--sidebar-accent-foreground: oklch(0.205 0 0);
+	--sidebar-border: oklch(0.922 0 0);
+	--sidebar-ring: oklch(0.708 0 0);
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.145 0 0);
+}
+
+.dark {
+	--background: oklch(0.145 0 0);
+	--foreground: oklch(0.985 0 0);
+	--card: oklch(0.205 0 0);
+	--card-foreground: oklch(0.985 0 0);
+	--popover: oklch(0.205 0 0);
+	--popover-foreground: oklch(0.985 0 0);
+	--primary: oklch(0.87 0.00 0);
+	--primary-foreground: oklch(0.205 0 0);
+	--secondary: oklch(0.269 0 0);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(0.269 0 0);
+	--muted-foreground: oklch(0.708 0 0);
+	--accent: oklch(0.371 0 0);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.704 0.191 22.216);
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 15%);
+	--ring: oklch(0.556 0 0);
+	--chart-1: oklch(0.809 0.105 251.813);
+	--chart-2: oklch(0.623 0.214 259.815);
+	--chart-3: oklch(0.546 0.245 262.881);
+	--chart-4: oklch(0.488 0.243 264.376);
+	--chart-5: oklch(0.424 0.199 265.638);
+	--sidebar: oklch(0.205 0 0);
+	--sidebar-foreground: oklch(0.985 0 0);
+	--sidebar-primary: oklch(0.488 0.243 264.376);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.269 0 0);
+	--sidebar-accent-foreground: oklch(0.985 0 0);
+	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+	--font-sans: 'Inter Variable', sans-serif;
+	--color-sidebar-ring: var(--sidebar-ring);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar: var(--sidebar);
+	--color-chart-5: var(--chart-5);
+	--color-chart-4: var(--chart-4);
+	--color-chart-3: var(--chart-3);
+	--color-chart-2: var(--chart-2);
+	--color-chart-1: var(--chart-1);
+	--color-ring: var(--ring);
+	--color-input: var(--input);
+	--color-border: var(--border);
+	--color-destructive: var(--destructive);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-accent: var(--accent);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-muted: var(--muted);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-secondary: var(--secondary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary: var(--primary);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-popover: var(--popover);
+	--color-card-foreground: var(--card-foreground);
+	--color-card: var(--card);
+	--color-foreground: var(--foreground);
+	--color-background: var(--background);
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--radius-2xl: calc(var(--radius) + 8px);
+	--radius-3xl: calc(var(--radius) + 12px);
+	--radius-4xl: calc(var(--radius) + 16px);
+
+	--color-editor-starter-bg: var(--background);
+	--color-editor-starter-panel: var(
+		--background
+	); /* should be darker than bg to create a contrast */
+	--color-editor-starter-border: var(--border);
+	/* --color-editor-starter-accent: var(--accent); */
+	--color-editor-starter-accent: #059669;
+	--color-editor-starter-scrollbar-track: rgba(255, 255, 255, 0.04);
+	--color-editor-starter-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+}
+
+@layer components {
+	.bg-pattern-black-orchid {
+		background-color: #000000;
+		background-image: url('https://www.transparenttextures.com/patterns/black-orchid.png');
+		/* This is mostly intended for prototyping; please download the pattern and re-host for production environments. Thank you! */
+	}
+	.bg-pattern-squared {
+		background-color: #000;
+		opacity: 0.9;
+		background-image:
+			repeating-linear-gradient(
+				45deg,
+				#111111 25%,
+				transparent 25%,
+				transparent 75%,
+				#111111 75%,
+				#111111
+			),
+			repeating-linear-gradient(
+				45deg,
+				#111111 25%,
+				#000 25%,
+				#000 75%,
+				#111111 75%,
+				#111111
+			);
+		background-position:
+			0 0,
+			8px 8px;
+		background-size: 16px 16px;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+    @apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground font-sans;
+    @apply font-sans bg-background text-foreground;
+	}
+	html {
+		@apply font-sans;
+    @apply font-sans;
+	}
+}
+
+/* Monaco Editor suggestion widget - ensure it appears correctly */
+.monaco-suggest-widget {
+	z-index: 10002 !important;
+}
+
+/* CSS Editor Draggable Window */
+.css-editor-drag-handle {
+	cursor: move;
+	user-select: none;
+}
+
+.css-editor-drag-handle:hover {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
+}
+
+.bg-ci-bg {
+	--tw-bg-opacity: 1;
+	background-color: rgb(248 248 248 / var(--tw-bg-opacity, 1));
+}
+.ui-tag-shadow {
+	box-shadow:
+		0 4px 8px rgba(41, 41, 41, 0.06),
+		0 2px 4px rgba(41, 41, 41, 0.04),
+		0 1px 2px rgba(41, 41, 41, 0.04),
+		0 0 0 1px rgba(41, 41, 41, 0.08);
+	margin-bottom: 1.5rem;
+	display: flex;
+	height: 2rem;
+	width: -moz-fit-content;
+	width: fit-content;
+	flex-direction: row;
+	align-items: center;
+	border-radius: 0.5rem;
+	--tw-bg-opacity: 1;
+	background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+	padding: 0.125rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	--tw-text-opacity: 1;
+	color: rgb(82 82 82 / var(--tw-text-opacity, 1));
+}
+
+.ui-background-lines {
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	width: calc(100% - 2px);
+	height: calc(100% - 2px);
+	background-image: url(/scanline-dark.png);
+	background-repeat: repeat;
+	z-index: 0;
+	opacity: 0.08;
+	box-sizing: border-box;
 }

@@ -10,14 +10,15 @@ export default defineConfig({
     port: 3007,
     host: true,
   },
+
   resolve: {
     alias: {
-      "@repo/design-system": path.resolve(__dirname, "../../packages/design-system"),
-      "@repo/auth": path.resolve(__dirname, "../../packages/auth"),
-      "@repo/database": path.resolve(__dirname, "../../packages/database"),
+      "@sentry/nextjs": path.resolve(__dirname, "app/lib/sentry-stub.ts"),
     },
   },
+
   optimizeDeps: {
     include: ["react", "react-dom"],
+    exclude: ["@sentry/nextjs", "@repo/observability"],
   },
 });
